@@ -1,10 +1,12 @@
 import pypoman
 import numpy as np
 import re
-
+from pathlib import Path
 # ugly pattern to match input text
 pattern = re.compile(r"^\s*\(\s*([\d.]+)\s*([\d.]+)\s*([\d.]+)\s*\)\s*\(\s*([\d.]+)\s*([\d.]+)\s*([\d.]+)\s*\)\s*\(\s*([\d.]+)\s*([\d.]+)\s*([\d.]+)\s*\)")
 
+OUTPUT_DIR = Path("output")
+if not OUTPUT_DIR.exists(): OUTPUT_DIR.mkdir()
 
 def parse_str(lines, debug_msgs = False):
 
@@ -61,8 +63,15 @@ def parse_str(lines, debug_msgs = False):
 # print(f"printing vertices...\n{np.array(vertices)}")
 if __name__ == '__main__':
     import sys
+    from pathlib import Path
     lines = None
     filepath = sys.argv[1] if len(sys.argv) > 2 else "data.txt"
-    with open(filepath,"r") as f:
+    filepath = Path(filepath)
+    with open(str(filepath),"r") as f:
         lines = f.readlines()
-    print(np.array(parse_str(lines)))
+
+    results = np.array(parse_str(lines))
+
+    outputpath = OUTPUT_DIR / str(filepath.name)
+    with open(str(outputpath), "w") as f:
+        f.write(str(results))
