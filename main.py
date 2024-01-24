@@ -22,17 +22,19 @@ def parse_str(lines, debug_msgs = False):
             # p1 = (float(m[1]),float(m[2]),float(m[3]))
             # p2 = (float(m[3+1]),float(m[3+2]),float(m[3+3]))
             # p3 = (float(m[6+1]),float(m[6+2]),float(m[6+3]))
-            if debug_msgs: print(f"found line! adding ( {p1}, {p2}, {p3} )")
+            if debug_msgs: print(f"\nfound line!\n\t{p1 = !s}\n\t{p2 = !s}\n\t{p3 = !s}")
             vector_list.append((p1,p2,p3))
+    
     A = []
     b = []
-    for i in range(0, len(vector_list)):
-        p1, p2, p3 = vector_list[i]
+    
+    for i, (p1, p2, p3) in enumerate(vector_list):
+        # p1, p2, p3 = vector_list[i]
 
         p1 = np.array(p1)
         p2 = np.array(p2)
         p3 = np.array(p3)
-        print(f"\ncomputing ( {p1}, {p2}, {p3} )")
+        if debug_msgs: print(f"\ncomputing line {i+1}:\n\t{p1 = !s}\n\t{p2 = !s}\n\t{p3 = !s}")
 
         
         normal = np.cross(p3 - p1, p2 - p1)
@@ -42,7 +44,7 @@ def parse_str(lines, debug_msgs = False):
         b.append(np.dot(p1, normal))
         
         if debug_msgs: print(f"\t{normal = !s}")
-        if debug_msgs: print(f"\t{np.dot(p1, normal) = !s}")
+        if debug_msgs: print(f"\tp1 * normal = {np.dot(p1, normal)}")
         
     A = np.array(A)
     b = np.array(b)
@@ -63,14 +65,18 @@ def parse_str(lines, debug_msgs = False):
 # print(f"printing vertices...\n{np.array(vertices)}")
 if __name__ == '__main__':
     import sys
-    from pathlib import Path
+    args = sys.argv
     lines = None
-    filepath = sys.argv[1] if len(sys.argv) > 2 else "data.txt"
+    filepath, debug_msgs = "data.txt", False
+    if len(args) > 1: filepath = args[1]
+    if len(args) > 2: debug_msgs = args[2]
+    
+    
     filepath = Path(filepath)
     with open(str(filepath),"r") as f:
         lines = f.readlines()
 
-    results = np.array(parse_str(lines))
+    results = np.array(parse_str(lines, debug_msgs))
 
     outputpath = OUTPUT_DIR / str(filepath.name)
     with open(str(outputpath), "w") as f:
